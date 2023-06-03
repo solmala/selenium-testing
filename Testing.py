@@ -4,7 +4,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
 
 
 class TestTranslate:
@@ -112,7 +111,6 @@ class TestUGD:
         contact=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/sedes"]')
         #Assert Home o University?
         assert 'Home' in university.get_attribute('innerHTML') and 'Studies' in studies.get_attribute('innerHTML') and 'Students' in students.get_attribute('innerHTML') and 'Contact' in contact.get_attribute('innerHTML')
-
 
 class TestCampus:
     @pytest.fixture
