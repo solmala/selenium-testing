@@ -76,3 +76,38 @@ class TestTranslate:
         input1 =self.driver.find_element(By.CSS_SELECTOR, 'textarea[jsname="BJE2fc"]')
         input1.send_keys("Hola Mundo, mi nombre es el destructor de mundos")
         assert '48' in span.get_attribute('innerHTML')  
+
+class TestUGD:
+    @pytest.fixture
+
+    def setup(self):
+        self.driver = webdriver.Edge()
+        yield 
+        self.driver.quit()
+    
+    def test_buscador(self, setup):
+        wait = WebDriverWait(self.driver, 10)
+        self.driver.get('https://ugd.edu.ar/')
+        self.driver.maximize_window()
+        input = self.driver.find_element(By.ID, 'mod-search-searchword')
+        input.send_keys('Ingeniería')
+        input.send_keys(Keys.RETURN)
+        wait.until(EC.url_changes)
+        label = self.driver.find_element(By.CLASS_NAME, 'highlight')
+        assert 'Ingeniería' in label.get_attribute('innerHTML')
+
+    def test_english(self, setup):
+        wait = WebDriverWait(self.driver, 10)
+        self.driver.get('https://ugd.edu.ar/')
+        self.driver.maximize_window()
+        button = self.driver.find_element(By.CSS_SELECTOR, 'a[class="btn dropdown-toggle"]')
+        button.click()
+        button = self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/"]')
+        button.click()
+        wait.until(EC.url_changes)
+        university=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/"]')
+        studies=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/studies"]')
+        students=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/incoming-students"]')
+        contact=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/sedes"]')
+        #Assert Home o University?
+        assert 'Home' in university.get_attribute('innerHTML') and 'Studies' in studies.get_attribute('innerHTML') and 'Students' in students.get_attribute('innerHTML') and 'Contact' in contact.get_attribute('innerHTML')
