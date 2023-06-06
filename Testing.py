@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import time 
 
-class TestTranslate:
+""" class TestTranslate:
     @pytest.fixture
 
     def setup(self):
@@ -76,7 +76,7 @@ class TestTranslate:
         span =self.driver.find_element(By.CSS_SELECTOR, 'span[jsname="qKMVIf"]')
         input1 =self.driver.find_element(By.CSS_SELECTOR, 'textarea[jsname="BJE2fc"]')
         input1.send_keys("Hola Mundo, mi nombre es el destructor de mundos")
-        assert '48' in span.get_attribute('innerHTML')  
+        assert '48' in span.get_attribute('innerHTML')   """
 
 
 
@@ -85,7 +85,7 @@ class TestYoutube:
     @pytest.fixture
 
     def setup(self):
-        self.driver = webdriver.Edge()
+        self.driver = webdriver.Chrome()
         yield 
         self.driver.quit()
     
@@ -97,17 +97,37 @@ class TestYoutube:
         button.click()
         wait.until(EC.url_changes)
         input = self.driver.find_element(By.CSS_SELECTOR, 'input[type="email"]')
-        input.send_keys('credenciales validas')
+        input.send_keys('arnvsdpqxiywrmpxhi@bbitj.com')
         button = self.driver.find_element(By.CSS_SELECTOR, 'button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 qIypjc TrZEUc lw1w4b"]')
         button.click()
         input = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[type="password"]')))
-        input.send_keys('credenciales validas')
+        input.send_keys('vsdpqxiywrm')
         button = self.driver.find_element(By.CSS_SELECTOR, 'button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 qIypjc TrZEUc lw1w4b"]')
         button.click()
+        time.sleep(3) 
+        video = self.driver.find_element(By.ID, 'video-title')
+        video.click()
+        wait.until(EC.url_changes)
+        button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[class="yt-spec-button-shape-next yt-spec-button-shape-next--tonal yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-m yt-spec-button-shape-next--icon-button "]')))
+        button.click()
+        """ time.sleep(5)
+        wait.until(EC.visibility_of_element_located((By.XPATH, '//*[text()[contains(., Guardar)]]')))
+         """
+        padre = self.driver.find_element(By.CSS_SELECTOR, 'tp-yt-paper-listbox[id="items"]')
+        hijos = padre.find_elements(By.CSS_SELECTOR, 'yt-formatted-string[class="style-scope ytd-menu-service-item-renderer"]')
+        for hijo in hijos:
+            if 'Guardar' in hijo.get_attribute('innerHTML'):
+                hijo.click()
+                #time.sleep(5)
+                break            
+        button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'yt-formatted-string[title="Ver más tarde"]')))
+        button.click()
+        titulo = self.driver.title
+        print (titulo)
         time.sleep(15)
-        video = self.driver.find_element(By.ID, 'thumbnail')
-        ActionChains(self.driver).move_to_element(video)
-        button = self.driver.find_element(By.ID, 'button')
-        button.click()
-        button = self.driver.find_element(By.CSS_SELECTOR, 'ytd-menu-service-item-renderer[class="style-scope ytd-menu-popup-renderer"]')
-        button.click()
+        self.driver.get('https://www.youtube.com/playlist?list=WL')
+        wait.until(EC.url_changes)
+        time.sleep(8)
+        video = self.driver.find_element(By.CSS_SELECTOR, 'a[class="yt-simple-endpoint style-scope ytd-playlist-video-renderer"]')
+        print(video.get_attribute('innerHTML'))
+        assert titulo[-8] in video.get_attribute('innerHTML')
