@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import time 
 
-""" class TestTranslate:
+class TestTranslate:
     @pytest.fixture
 
     def setup(self):
@@ -76,9 +76,7 @@ import time
         span =self.driver.find_element(By.CSS_SELECTOR, 'span[jsname="qKMVIf"]')
         input1 =self.driver.find_element(By.CSS_SELECTOR, 'textarea[jsname="BJE2fc"]')
         input1.send_keys("Hola Mundo, mi nombre es el destructor de mundos")
-        assert '48' in span.get_attribute('innerHTML')   """
-
-
+        assert '48' in span.get_attribute('innerHTML')  
 
 class TestYoutube:
     #No anda
@@ -144,4 +142,118 @@ class TestYoutube:
         button = self.driver.find_element(By.CSS_SELECTOR, 'button[aria-label="Configuración"]')
         button.click()
         button = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'div[class="style-scope ytd-toggle-theme-compact-link-renderer"]')))
-        assert 'Oscuro' in button.get_attribute('innerHTML')
+        assert 'Oscuro' in button.get_attribute('innerHTML') 
+
+class TestUGD:
+    @pytest.fixture
+
+    def setup(self):
+        self.driver = webdriver.Edge()
+        yield 
+        self.driver.quit()
+    
+    def test_buscador(self, setup):
+        wait = WebDriverWait(self.driver, 10)
+        self.driver.get('https://ugd.edu.ar/')
+        self.driver.maximize_window()
+        input = self.driver.find_element(By.ID, 'mod-search-searchword')
+        input.send_keys('Ingeniería')
+        input.send_keys(Keys.RETURN)
+        wait.until(EC.url_changes)
+        label = self.driver.find_element(By.CLASS_NAME, 'highlight')
+        assert 'Ingeniería' in label.get_attribute('innerHTML')
+
+    def test_english(self, setup):
+        wait = WebDriverWait(self.driver, 10)
+        self.driver.get('https://ugd.edu.ar/')
+        self.driver.maximize_window()
+        button = self.driver.find_element(By.CSS_SELECTOR, 'a[class="btn dropdown-toggle"]')
+        button.click()
+        button = self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/"]')
+        button.click()
+        wait.until(EC.url_changes)
+        university=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/"]')
+        studies=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/studies"]')
+        students=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/incoming-students"]')
+        contact=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/sedes"]')
+        #Assert Home o University?
+        assert 'Home' in university.get_attribute('innerHTML') and 'Studies' in studies.get_attribute('innerHTML') and 'Students' in students.get_attribute('innerHTML') and 'Contact' in contact.get_attribute('innerHTML')
+
+class TestCampus:
+    @pytest.fixture
+
+    def setup(self):
+        self.driver = webdriver.Edge()
+        yield 
+        self.driver.quit()
+    
+    def test_buscador(self, setup):
+        wait = WebDriverWait(self.driver, 10)
+        self.driver.get('https://campusvirtual.ugd.edu.ar/')
+        self.driver.maximize_window()
+        input = self.driver.find_element(By.ID, 'username')
+        input.send_keys('CREDENCIALES CORRECTAS')
+        input = self.driver.find_element(By.ID, 'password')
+        input.send_keys('CREDENCIALES CORRECTAS')
+        button = self.driver.find_element(By.CSS_SELECTOR, 'input[value="Ingresar"]')
+        button.click()
+        wait.until(EC.url_changes)
+        button = self.driver.find_element(By.CSS_SELECTOR, 'a[title="Todos los Cursos"]')
+        button.click()
+        wait.until(EC.url_changes) 
+        self.driver.execute_script("window.scrollTo(500, document.body.scrollHeight);")
+        input = self.driver.find_element(By.ID, 'navsearchbox')
+        input.send_keys('gestion de calidad')
+        input.send_keys(Keys.RETURN)
+        wait.until(EC.url_changes)
+        button = self.driver.find_element(By.CSS_SELECTOR, 'a[href="https://campusvirtual.ugd.edu.ar/moodle/course/view.php?id=64"]')
+        button.click()
+        wait.until(EC.url_changes)
+        assert "GESTION DE LA CALIDAD Y AUDITORIA" in self.driver.title
+
+    def test_aviso(self, setup):
+        wait = WebDriverWait(self.driver, 10)
+        self.driver.get('https://campusvirtual.ugd.edu.ar/')
+        self.driver.maximize_window()
+        input = self.driver.find_element(By.ID, 'username')
+        input.send_keys('CREDENCIALES CORRECTAS')
+        input = self.driver.find_element(By.ID, 'password')
+        input.send_keys('CREDENCIALES CORRECTAS')
+        button = self.driver.find_element(By.CSS_SELECTOR, 'input[value="Ingresar"]')
+        button.click()
+        wait.until(EC.url_changes)      
+        assert self.driver.find_element("xpath","//*[text()[contains(., 'no deberá registrar deuda luego del día 10 de cada mes')]]")
+
+    def test_footer(self, setup):
+        wait = WebDriverWait(self.driver, 10)
+        self.driver.get('https://campusvirtual.ugd.edu.ar/')
+        self.driver.maximize_window()
+        input = self.driver.find_element(By.ID, 'username')
+        input.send_keys('CREDENCIALES CORRECTAS')
+        input = self.driver.find_element(By.ID, 'password')
+        input.send_keys('CREDENCIALES CORRECTAS')
+        button = self.driver.find_element(By.CSS_SELECTOR, 'input[value="Ingresar"]')
+        button.click()
+        wait.until(EC.url_changes)      
+        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        button=self.driver.find_element(By.CSS_SELECTOR, 'a[href="https://www.ugd.edu.ar/la-universidad/alumnos/horarios-de-catedra"]')
+        button.click()
+        wait.until(EC.new_window_is_opened)
+        chwd = self.driver.window_handles
+        self.driver.switch_to.window(chwd[1])
+        wait.until(EC.url_changes)
+        assert 'Horarios de cátedra' in self.driver.title  
+
+    def test_error_credenciales(self, setup):
+        wait = WebDriverWait(self.driver, 10)
+        self.driver.get('https://campusvirtual.ugd.edu.ar/')
+        self.driver.maximize_window()
+        input = self.driver.find_element(By.ID, 'username')
+        input.send_keys('CREDENCIAL ERRONEA')
+        input = self.driver.find_element(By.ID, 'password')
+        input.send_keys('CREDENCIAL ERRONEA')
+        button = self.driver.find_element(By.CSS_SELECTOR, 'input[value="Ingresar"]')
+        button.click()
+        wait.until(EC.url_changes) 
+        assert self.driver.find_element(By.ID, 'loginerrormessage')
+
