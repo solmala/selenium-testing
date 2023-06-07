@@ -79,7 +79,6 @@ class TestTranslate:
         assert '48' in span.get_attribute('innerHTML')  
 
 class TestYoutube:
-    #No anda
     @pytest.fixture
 
     def setup(self):
@@ -95,11 +94,11 @@ class TestYoutube:
         button.click()
         wait.until(EC.url_changes)
         input = self.driver.find_element(By.CSS_SELECTOR, 'input[type="email"]')
-        input.send_keys('credenciales validas')
+        input.send_keys('CREDENCIALES CORRECTAS')
         button = self.driver.find_element(By.CSS_SELECTOR, 'button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 qIypjc TrZEUc lw1w4b"]')
         button.click()
         input = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[type="password"]')))
-        input.send_keys('credenciales validas')
+        input.send_keys('CREDENCIALES CORRECTAS')
         button = self.driver.find_element(By.CSS_SELECTOR, 'button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 qIypjc TrZEUc lw1w4b"]')
         button.click()
         time.sleep(3) 
@@ -113,16 +112,15 @@ class TestYoutube:
         for hijo in hijos:
             if 'Guardar' in hijo.get_attribute('innerHTML'):
                 hijo.click()
-                #time.sleep(5)
                 break            
         button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'yt-formatted-string[title="Ver más tarde"]')))
         button.click()
         titulo = self.driver.title
         print (titulo)
-        time.sleep(15)
+        time.sleep(15) #Se espera este tiempo porque a veces youtube tarda en agregar un video a "Ver más tarde"
         self.driver.get('https://www.youtube.com/playlist?list=WL')
         wait.until(EC.url_changes)
-        time.sleep(2)
+        time.sleep(2) #Se espera este tiempo porque la página termina de cargar antes de que carguen todos los elementos.
         video = self.driver.find_element(By.CSS_SELECTOR, 'a[class="yt-simple-endpoint style-scope ytd-playlist-video-renderer"]')
         print(video.get_attribute('innerHTML'))
         assert titulo[-8] in video.get_attribute('innerHTML') 
@@ -148,7 +146,7 @@ class TestUGD:
     @pytest.fixture
 
     def setup(self):
-        self.driver = webdriver.Edge()
+        self.driver = webdriver.Chrome()
         yield 
         self.driver.quit()
     
@@ -176,14 +174,13 @@ class TestUGD:
         studies=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/studies"]')
         students=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/incoming-students"]')
         contact=self.driver.find_element(By.CSS_SELECTOR, 'a[href="/en/sedes"]')
-        #Assert Home o University?
-        assert 'Home' in university.get_attribute('innerHTML') and 'Studies' in studies.get_attribute('innerHTML') and 'Students' in students.get_attribute('innerHTML') and 'Contact' in contact.get_attribute('innerHTML')
+        assert 'Home' in university.get_attribute('innerHTML') and 'Studies' in studies.get_attribute('innerHTML') and 'students' in students.get_attribute('innerHTML') and 'Contact' in contact.get_attribute('innerHTML')
 
 class TestCampus:
     @pytest.fixture
 
     def setup(self):
-        self.driver = webdriver.Edge()
+        self.driver = webdriver.Chrome()
         yield 
         self.driver.quit()
     
@@ -222,7 +219,12 @@ class TestCampus:
         button = self.driver.find_element(By.CSS_SELECTOR, 'input[value="Ingresar"]')
         button.click()
         wait.until(EC.url_changes)      
-        assert self.driver.find_element("xpath","//*[text()[contains(., 'no deberá registrar deuda luego del día 10 de cada mes')]]")
+        final = self.driver.find_element("xpath","//*[text()[contains(., 'no deberá registrar deuda luego del día 10 de cada mes')]]")
+        if final == None:
+            res = False
+        else:
+            res = True
+        assert res
 
     def test_footer(self, setup):
         wait = WebDriverWait(self.driver, 10)
@@ -236,7 +238,7 @@ class TestCampus:
         button.click()
         wait.until(EC.url_changes)      
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        button=self.driver.find_element(By.CSS_SELECTOR, 'a[href="https://www.ugd.edu.ar/la-universidad/alumnos/horarios-de-catedra"]')
+        button=self.driver.find_element(By.XPATH, '//a[text() = "Horario de Cátedra"]')
         button.click()
         wait.until(EC.new_window_is_opened)
         chwd = self.driver.window_handles
@@ -255,5 +257,5 @@ class TestCampus:
         button = self.driver.find_element(By.CSS_SELECTOR, 'input[value="Ingresar"]')
         button.click()
         wait.until(EC.url_changes) 
-        assert self.driver.find_element(By.ID, 'loginerrormessage')
-
+        msj= self.driver.find_element(By.ID, 'loginerrormessage')        
+        assert 'Datos erróneos, por favor inténtelo de nuevo. Recuerde que el usuario se bloquea al adeudar la cuota el día 17 del mes vigente o más cuotas' in msj.get_attribute('innerHTML')
